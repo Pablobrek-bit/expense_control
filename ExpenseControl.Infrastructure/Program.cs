@@ -1,9 +1,12 @@
+using Scalar.AspNetCore;
 using ExpenseControl.Application.Interfaces;
 using ExpenseControl.Application.Services;
 using ExpenseControl.Domain.Interfaces;
 using ExpenseControl.Infrastructure.Persistence;
 using ExpenseControl.Infrastructure.Persistence.Repositories;
+using ExpenseControl.Infrastructure.Web.Filters;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,8 +23,17 @@ builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 
-// controllers e o open api
-builder.Services.AddControllers();
+// controllers, filtro global de exceções e configuração de JSON
+builder.Services.AddControllers(options =>
+    {
+        options.Filters.Add<GlobalExceptionFilter>();
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    })
+    .ConfigureValidationResponse();
+
 builder.Services.AddOpenApi();
 
 // configuração da parte do cors para poder permitir o uso do backend
@@ -47,10 +59,11 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
+    app.MapGet("/", () => Results.Redirect("/scalar/v1"));
 }
 
 app.UseCors("AllowFrontend");
-app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
