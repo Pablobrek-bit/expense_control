@@ -36,18 +36,7 @@ public class TransactionController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TransactionResponse>> Create([FromBody] CreateTransactionRequest request)
     {
-        try
-        {
-            var transaction = await _transactionService.CreateAsync(request);
-            return CreatedAtAction(nameof(GetAll), new { id = transaction.Id }, transaction);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var transaction = await _transactionService.CreateAsync(request);
+        return CreatedAtAction(nameof(GetAll), new { id = transaction.Id }, transaction);
     }
 }
