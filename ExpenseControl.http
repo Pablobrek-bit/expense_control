@@ -1,0 +1,103 @@
+@HostAddress = http://localhost:5023
+
+### Criar pessoa adulta
+# @name createAdultPerson
+POST {{HostAddress}}/api/persons
+Content-Type: application/json
+
+{
+  "name": "Pablo",
+  "age": 30
+}
+
+###
+
+### 2. Criar Pessoa Menor de Idade (Enzo - 12 anos)
+# @name createMinorPerson
+POST {{HostAddress}}/api/persons
+Content-Type: application/json
+
+{
+  "name": "Enzo",
+  "age": 12
+}
+
+###
+
+### 3. Listar Todas as Pessoas
+GET {{HostAddress}}/api/persons
+Accept: application/json
+
+###
+
+### 4. Adicionar Despesa para Pessoa Adulta
+# Substitua o personId pelo id gerado no passo 1
+# Type: 1 (Despesa)
+POST {{HostAddress}}/api/transactions
+Content-Type: application/json
+
+{
+  "description": "Conta de Luz",
+  "value": 150.50,
+  "type": "Expense",
+  "personId": "5b82a2f8-29aa-40e1-a862-63031c5860e1"
+}
+
+###
+
+### 5. Adicionar Receita para Pessoa Adulta
+# Type: 0 (Receita)
+POST {{HostAddress}}/api/transactions
+Content-Type: application/json
+
+{
+  "description": "Salário Mensal",
+  "value": 5000.00,
+  "type": "Income",
+  "personId": "{{createAdultPerson.response.body.$.id}}"
+}
+
+###
+
+### 6. Tentar Adicionar Receita para Menor de Idade (DEVE DAR ERRO)
+# Type: 0 (Receita)
+POST {{HostAddress}}/api/transactions
+Content-Type: application/json
+
+{
+  "description": "Mesada",
+  "value": 100.00,
+  "type": "Income",
+  "personId": "{{createMinorPerson.response.body.$.id}}"
+}
+
+###
+
+### 7. Adicionar Despesa para Menor de Idade (PERMITIDO)
+# Type: 1 (Despesa)
+POST {{HostAddress}}/api/transactions
+Content-Type: application/json
+
+{
+  "description": "Lanche da escola",
+  "value": 15.00,
+  "type": "Expense",
+  "personId": "{{createMinorPerson.response.body.$.id}}"
+}
+
+###
+
+### 8. Consultar Totais (Summary)
+GET {{HostAddress}}/api/summary
+Accept: application/json
+
+###
+
+### 9. Listar Todas as Transações
+GET {{HostAddress}}/api/transactions
+Accept: application/json
+
+###
+
+### 10. Deletar Pessoa Adulta (e em cascata suas transações)
+DELETE {{HostAddress}}/api/persons/{{createAdultPerson.response.body.$.id}}
