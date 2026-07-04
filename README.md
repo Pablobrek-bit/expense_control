@@ -120,3 +120,26 @@ A API possui um **Filtro Global de Exceções** (`GlobalExceptionFilter`) que in
 ```
 
 Erros de validação (como campos obrigatórios vazios, valores negativos ou UUIDs inválidos) também são interceptados e formatados de maneira amigável em português, sem vazar nomenclaturas internas do .NET.
+
+---
+
+## 💅 Padrões de Código e Formatação
+
+O projeto utiliza o **`.editorconfig`** nativo do ecossistema .NET para garantir que todo o código mantenha o mesmo padrão profissional. 
+
+As seguintes regras estão ativas:
+- Indentação de 4 espaços.
+- `PascalCase` para Classes e Métodos.
+- Prefixo `I` obrigatório para Interfaces (ex: `IPersonRepository`).
+- `_camelCase` obrigatório para campos privados (como injeções de dependência).
+- Limpeza e ordenação automática de `using` (imports).
+
+Para verificar e formatar automaticamente todo o projeto (similar ao `eslint --fix`), basta executar na raiz:
+```bash
+dotnet format
+```
+
+Para ver o log detalhado e checar quais avisos o compilador encontrou (sem quebrar a formatação), você pode utilizar:
+```bash
+dotnet format -v diag
+```
