@@ -5,7 +5,8 @@ namespace ExpenseControl.Application.DTOs;
 /// <summary>
 /// DTO de entrada para criação de uma pessoa.
 /// </summary>
-public class CreatePersonRequest{
+public class CreatePersonRequest
+{
     /// <summary>
     /// Nome da pessoa.
     /// </summary>

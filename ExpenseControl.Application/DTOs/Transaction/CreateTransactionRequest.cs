@@ -6,7 +6,8 @@ namespace ExpenseControl.Application.DTOs;
 /// <summary>
 /// DTO de entrada para criação de uma transação.
 /// </summary>
-public class CreateTransactionRequest{
+public class CreateTransactionRequest
+{
     /// <summary>
     /// Descrição da transação.
     /// </summary>

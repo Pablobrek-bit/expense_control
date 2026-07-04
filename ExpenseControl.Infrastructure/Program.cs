@@ -1,4 +1,4 @@
-using Scalar.AspNetCore;
+using System.Text.Json.Serialization;
 using ExpenseControl.Application.Interfaces;
 using ExpenseControl.Application.Services;
 using ExpenseControl.Domain.Interfaces;
@@ -6,7 +6,7 @@ using ExpenseControl.Infrastructure.Persistence;
 using ExpenseControl.Infrastructure.Persistence.Repositories;
 using ExpenseControl.Infrastructure.Web.Filters;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
