@@ -123,7 +123,7 @@ Erros de validação (como campos obrigatórios vazios, valores negativos ou UUI
 
 ---
 
-## 💅 Padrões de Código e Formatação
+## Padrões de Código e Formatação
 
 O projeto utiliza o **`.editorconfig`** nativo do ecossistema .NET para garantir que todo o código mantenha o mesmo padrão profissional. 
 
