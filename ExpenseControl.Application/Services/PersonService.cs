@@ -36,6 +36,27 @@ public class PersonService : IPersonService
     }
 
     /// <inheritdoc />
+    public async Task<PersonDetailsResponse> GetDetailsAsync(Guid id)
+    {
+        var person = await _personRepository.GetByIdWithTransactionsAsync(id)
+            ?? throw new KeyNotFoundException($"Pessoa com ID '{id}' não encontrada.");
+
+        return new PersonDetailsResponse
+        {
+            Id = person.Id,
+            Name = person.Name,
+            Age = person.Age,
+            Transactions = person.Transactions.Select(t => new PersonTransactionResponse
+            {
+                Id = t.Id,
+                Description = t.Description,
+                Value = t.Value,
+                Type = t.Type
+            }).ToList()
+        };
+    }
+
+    /// <inheritdoc />
     public async Task<PersonResponse> CreateAsync(CreatePersonRequest request)
     {
         var person = new Person
@@ -60,7 +81,6 @@ public class PersonService : IPersonService
         var person = await _personRepository.GetByIdAsync(id)
             ?? throw new KeyNotFoundException($"Pessoa com ID '{id}' não encontrada.");
 
-        // Regra de negócio: ao deletar uma pessoa, todas as transações dela são apagadas.
         await _transactionRepository.DeleteByPersonIdAsync(id);
         await _personRepository.DeleteAsync(person);
     }

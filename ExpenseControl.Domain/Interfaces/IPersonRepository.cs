@@ -14,9 +14,14 @@ public interface IPersonRepository
     Task<IEnumerable<Person>> GetAllAsync();
 
     /// <summary>
-    /// Busca uma pessoa pelo seu identificador.
+    /// Retorna uma pessoa pelo seu identificador único.
     /// </summary>
     Task<Person?> GetByIdAsync(Guid id);
+
+    /// <summary>
+    /// Retorna uma pessoa pelo seu identificador único, incluindo todas as suas transações.
+    /// </summary>
+    Task<Person?> GetByIdWithTransactionsAsync(Guid id);
 
     /// <summary>
     /// Adiciona uma nova pessoa ao repositório.

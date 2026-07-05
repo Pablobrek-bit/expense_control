@@ -32,6 +32,14 @@ public class PersonRepository : IPersonRepository
     }
 
     /// <inheritdoc />
+    public async Task<Person?> GetByIdWithTransactionsAsync(Guid id)
+    {
+        return await _context.Persons
+            .Include(p => p.Transactions)
+            .FirstOrDefaultAsync(p => p.Id == id);
+    }
+
+    /// <inheritdoc />
     public async Task AddAsync(Person person)
     {
         await _context.Persons.AddAsync(person);

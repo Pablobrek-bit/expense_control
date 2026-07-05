@@ -1,4 +1,4 @@
-@HostAddress = http://localhost:8080
+@HostAddress = http://localhost:5023
 
 ### Criar pessoa adulta
 # @name createAdultPerson
@@ -26,7 +26,12 @@ Content-Type: application/json
 
 ### 3. Listar Todas as Pessoas
 GET {{HostAddress}}/api/persons
-Accept: application/json
+
+###
+
+### 3.1 Detalhes de uma Pessoa Específica (com transações)
+# Substitua o ID abaixo pelo ID gerado na requisição acima
+GET {{HostAddress}}/api/persons/55a6b9b9-bc02-4c96-8ce6-47aba31787a8
 
 ###
 
@@ -40,7 +45,7 @@ Content-Type: application/json
   "description": "Conta de Luz",
   "value": 150.50,
   "type": "Expense",
-  "personId": "5b82a2f8-29aa-40e1-a862-63031c5860e1"
+  "personId": "55a6b9b9-bc02-4c96-8ce6-47aba31787a8"
 }
 
 ###

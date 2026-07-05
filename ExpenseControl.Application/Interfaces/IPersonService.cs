@@ -14,7 +14,12 @@ public interface IPersonService
     Task<IEnumerable<PersonResponse>> GetAllAsync();
 
     /// <summary>
-    /// Cria uma nova pessoa.
+    /// Retorna os detalhes de uma pessoa pelo seu ID, incluindo suas transações.
+    /// </summary>
+    Task<PersonDetailsResponse> GetDetailsAsync(Guid id);
+
+    /// <summary>
+    /// Cria uma nova pessoa no sistema.
     /// </summary>
     Task<PersonResponse> CreateAsync(CreatePersonRequest request);
 

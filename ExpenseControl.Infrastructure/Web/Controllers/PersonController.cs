@@ -30,6 +30,16 @@ public class PersonController : ControllerBase
     }
 
     /// <summary>
+    /// Retorna os detalhes de uma pessoa pelo seu ID, incluindo suas transações.
+    /// </summary>
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<PersonDetailsResponse>> GetById(Guid id)
+    {
+        var personDetails = await _personService.GetDetailsAsync(id);
+        return Ok(personDetails);
+    }
+
+    /// <summary>
     /// Cria uma nova pessoa.
     /// </summary>
     [HttpPost]
