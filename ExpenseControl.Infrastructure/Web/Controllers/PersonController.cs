@@ -46,7 +46,17 @@ public class PersonController : ControllerBase
     public async Task<ActionResult<PersonResponse>> Create([FromBody] CreatePersonRequest request)
     {
         var person = await _personService.CreateAsync(request);
-        return CreatedAtAction(nameof(GetAll), new { id = person.Id }, person);
+        return CreatedAtAction(nameof(GetById), new { id = person.Id }, person);
+    }
+
+    /// <summary>
+    /// Atualiza os dados de uma pessoa.
+    /// </summary>
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<PersonResponse>> Update(Guid id, [FromBody] UpdatePersonRequest request)
+    {
+        var updatedPerson = await _personService.UpdateAsync(id, request);
+        return Ok(updatedPerson);
     }
 
     /// <summary>

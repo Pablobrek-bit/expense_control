@@ -32,6 +32,19 @@ GET {{HostAddress}}/api/persons
 ### 3.1 Detalhes de uma Pessoa Específica (com transações)
 # Substitua o ID abaixo pelo ID gerado na requisição acima
 GET {{HostAddress}}/api/persons/55a6b9b9-bc02-4c96-8ce6-47aba31787a8
+Accept: application/json
+
+###
+
+### 3.2 Atualizar os dados de uma Pessoa
+# Substitua o ID abaixo pelo ID da pessoa que deseja atualizar
+PUT {{HostAddress}}/api/persons/55a6b9b9-bc02-4c96-8ce6-47aba31787a8
+Content-Type: application/json
+
+{
+  "name": "Nome Atualizado",
+  "age": 35
+}
 
 ###
 
@@ -45,7 +58,7 @@ Content-Type: application/json
   "description": "Conta de Luz",
   "value": 150.50,
   "type": "Expense",
-  "personId": "55a6b9b9-bc02-4c96-8ce6-47aba31787a8"
+  "personId": "5b82a2f8-29aa-40e1-a862-63031c5860e1"
 }
 
 ###
@@ -59,7 +72,7 @@ Content-Type: application/json
   "description": "Salário Mensal",
   "value": 5000.00,
   "type": "Income",
-  "personId": "{{createAdultPerson.response.body.$.id}}"
+  "personId": "55a6b9b9-bc02-4c96-8ce6-47aba31787a8"
 }
 
 ###

@@ -29,6 +29,11 @@ public interface IPersonRepository
     Task AddAsync(Person person);
 
     /// <summary>
+    /// Atualiza os dados de uma pessoa existente.
+    /// </summary>
+    Task UpdateAsync(Person person);
+
+    /// <summary>
     /// Remove uma pessoa do repositório.
     /// </summary>
     Task DeleteAsync(Person person);

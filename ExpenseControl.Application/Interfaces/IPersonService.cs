@@ -24,6 +24,11 @@ public interface IPersonService
     Task<PersonResponse> CreateAsync(CreatePersonRequest request);
 
     /// <summary>
+    /// Atualiza os dados de uma pessoa existente no sistema.
+    /// </summary>
+    Task<PersonResponse> UpdateAsync(Guid id, UpdatePersonRequest request);
+
+    /// <summary>
     /// Deleta uma pessoa e todas as suas transações.
     /// </summary>
     Task DeleteAsync(Guid id);

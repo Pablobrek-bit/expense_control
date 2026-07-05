@@ -76,6 +76,25 @@ public class PersonService : IPersonService
     }
 
     /// <inheritdoc />
+    public async Task<PersonResponse> UpdateAsync(Guid id, UpdatePersonRequest request)
+    {
+        var person = await _personRepository.GetByIdAsync(id)
+            ?? throw new KeyNotFoundException($"Pessoa com ID '{id}' não encontrada.");
+
+        person.Name = request.Name;
+        person.Age = request.Age;
+
+        await _personRepository.UpdateAsync(person);
+
+        return new PersonResponse
+        {
+            Id = person.Id,
+            Name = person.Name,
+            Age = person.Age
+        };
+    }
+
+    /// <inheritdoc />
     public async Task DeleteAsync(Guid id)
     {
         var person = await _personRepository.GetByIdAsync(id)

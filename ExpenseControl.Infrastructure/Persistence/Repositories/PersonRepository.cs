@@ -47,6 +47,13 @@ public class PersonRepository : IPersonRepository
     }
 
     /// <inheritdoc />
+    public async Task UpdateAsync(Person person)
+    {
+        _context.Persons.Update(person);
+        await _context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
     public async Task DeleteAsync(Person person)
     {
         _context.Persons.Remove(person);
