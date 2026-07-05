@@ -117,5 +117,11 @@ Accept: application/json
 
 ###
 
-### 10. Deletar Pessoa Adulta (e em cascata suas transações)
+### 10. Deletar uma Transação Específica
+# Substitua o ID abaixo pelo ID da transação que deseja deletar
+DELETE {{HostAddress}}/api/transactions/d4652ebd-224c-4db3-baec-34f700b7c112
+
+###
+
+### 11. Deletar Pessoa Adulta (e em cascata suas transações)
 DELETE {{HostAddress}}/api/persons/{{createAdultPerson.response.body.$.id}}

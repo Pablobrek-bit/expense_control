@@ -23,4 +23,9 @@ public interface ITransactionService
     /// Retorna o resumo financeiro de todas as pessoas com totais gerais.
     /// </summary>
     Task<SummaryResponse> GetSummaryAsync();
+
+    /// <summary>
+    /// Deleta uma transação pelo seu ID.
+    /// </summary>
+    Task DeleteAsync(Guid id);
 }

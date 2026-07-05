@@ -43,6 +43,19 @@ public class TransactionRepository : ITransactionRepository
     }
 
     /// <inheritdoc />
+    public async Task<Transaction?> GetByIdAsync(Guid id)
+    {
+        return await _context.Transactions.FindAsync(id);
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteAsync(Transaction transaction)
+    {
+        _context.Transactions.Remove(transaction);
+        await _context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
     public async Task DeleteByPersonIdAsync(Guid personId)
     {
         var transactions = await _context.Transactions

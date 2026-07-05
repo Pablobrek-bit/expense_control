@@ -39,4 +39,14 @@ public class TransactionController : ControllerBase
         var transaction = await _transactionService.CreateAsync(request);
         return CreatedAtAction(nameof(GetAll), new { id = transaction.Id }, transaction);
     }
+
+    /// <summary>
+    /// Deleta uma transação pelo seu ID.
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _transactionService.DeleteAsync(id);
+        return NoContent();
+    }
 }

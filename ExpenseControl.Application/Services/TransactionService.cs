@@ -110,4 +110,13 @@ public class TransactionService : ITransactionService
             NetBalance = personSummaries.Sum(p => p.Balance)
         };
     }
+
+    /// <inheritdoc />
+    public async Task DeleteAsync(Guid id)
+    {
+        var transaction = await _transactionRepository.GetByIdAsync(id)
+            ?? throw new KeyNotFoundException($"Transação com ID '{id}' não encontrada.");
+
+        await _transactionRepository.DeleteAsync(transaction);
+    }
 }
