@@ -1,4 +1,6 @@
 using ExpenseControl.Application.DTOs;
+using ExpenseControl.Application.DTOs.Common;
+using ExpenseControl.Application.DTOs.Transaction;
 using ExpenseControl.Application.Interfaces;
 using ExpenseControl.Domain.Entities;
 using ExpenseControl.Domain.Enums;
@@ -24,19 +26,21 @@ public class TransactionService : ITransactionService
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<TransactionResponse>> GetAllAsync()
+    public async Task<PagedResult<TransactionResponse>> GetAllAsync(TransactionFilter filter)
     {
-        var transactions = await _transactionRepository.GetAllAsync();
+        var (items, totalCount) = await _transactionRepository.GetAllAsync(filter.Page, filter.PageSize, filter.Type, filter.PersonId);
 
-        return transactions.Select(t => new TransactionResponse
+        var responses = items.Select(t => new TransactionResponse
         {
             Id = t.Id,
             Description = t.Description,
             Value = t.Value,
             Type = t.Type,
             PersonId = t.PersonId,
-            PersonName = t.Person.Name
+            PersonName = t.Person?.Name
         });
+
+        return new PagedResult<TransactionResponse>(responses, totalCount, filter.Page, filter.PageSize);
     }
 
     /// <inheritdoc />

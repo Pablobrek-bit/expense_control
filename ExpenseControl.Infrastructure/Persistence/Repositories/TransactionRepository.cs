@@ -18,12 +18,29 @@ public class TransactionRepository : ITransactionRepository
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<Transaction>> GetAllAsync()
+    public async Task<(IEnumerable<Transaction> Items, int TotalCount)> GetAllAsync(int page, int pageSize, ExpenseControl.Domain.Enums.TransactionType? type = null, Guid? personId = null)
     {
-        return await _context.Transactions
-            .AsNoTracking()
-            .Include(t => t.Person)
+        var query = _context.Transactions.AsNoTracking().Include(t => t.Person).AsQueryable();
+
+        if (type.HasValue)
+        {
+            query = query.Where(t => t.Type == type.Value);
+        }
+
+        if (personId.HasValue)
+        {
+            query = query.Where(t => t.PersonId == personId.Value);
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(t => t.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return (items, totalCount);
     }
 
     /// <inheritdoc />

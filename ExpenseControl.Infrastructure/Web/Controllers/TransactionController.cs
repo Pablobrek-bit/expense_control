@@ -1,4 +1,6 @@
 using ExpenseControl.Application.DTOs;
+using ExpenseControl.Application.DTOs.Transaction;
+using ExpenseControl.Application.DTOs.Common;
 using ExpenseControl.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,12 +22,12 @@ public class TransactionController : ControllerBase
     }
 
     /// <summary>
-    /// Lista todas as transações cadastradas.
+    /// Retorna uma lista paginada de transações, com suporte a filtros.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TransactionResponse>>> GetAll()
+    public async Task<ActionResult<PagedResult<TransactionResponse>>> GetAll([FromQuery] TransactionFilter filter)
     {
-        var transactions = await _transactionService.GetAllAsync();
+        var transactions = await _transactionService.GetAllAsync(filter);
         return Ok(transactions);
     }
 

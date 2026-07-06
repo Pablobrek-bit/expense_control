@@ -9,9 +9,10 @@ namespace ExpenseControl.Domain.Interfaces;
 public interface ITransactionRepository
 {
     /// <summary>
-    /// Retorna todas as transações cadastradas.
+    /// Retorna uma página de transações cadastradas, com suporte a filtros.
+    /// Retorna uma tupla contendo a lista de itens e o total de registros que satisfazem o filtro.
     /// </summary>
-    Task<IEnumerable<Transaction>> GetAllAsync();
+    Task<(IEnumerable<Transaction> Items, int TotalCount)> GetAllAsync(int page, int pageSize, Domain.Enums.TransactionType? type = null, Guid? personId = null);
 
     /// <summary>
     /// Retorna todas as transações de uma pessoa específica.

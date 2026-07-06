@@ -1,4 +1,6 @@
 using ExpenseControl.Application.DTOs;
+using ExpenseControl.Application.DTOs.Common;
+using ExpenseControl.Application.DTOs.Transaction;
 
 namespace ExpenseControl.Application.Interfaces;
 
@@ -9,9 +11,9 @@ namespace ExpenseControl.Application.Interfaces;
 public interface ITransactionService
 {
     /// <summary>
-    /// Retorna todas as transações cadastradas.
+    /// Retorna uma lista paginada de transações, com opção de filtros.
     /// </summary>
-    Task<IEnumerable<TransactionResponse>> GetAllAsync();
+    Task<PagedResult<TransactionResponse>> GetAllAsync(TransactionFilter filter);
 
     /// <summary>
     /// Cria uma nova transação.
