@@ -4,7 +4,7 @@ using ExpenseControl.Application.Services;
 using ExpenseControl.Domain.Interfaces;
 using ExpenseControl.Infrastructure.Persistence;
 using ExpenseControl.Infrastructure.Persistence.Repositories;
-using ExpenseControl.Infrastructure.Web.Filters;
+using ExpenseControl.Infrastructure.Web.Middlewares;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -23,16 +23,17 @@ builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 
-// controllers, filtro global de exceções e configuração de JSON
-builder.Services.AddControllers(options =>
-    {
-        options.Filters.Add<GlobalExceptionFilter>();
-    })
+// controllers e configuração de JSON
+builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     })
     .ConfigureValidationResponse();
+
+// Tratamento de exceções e ProblemDetails
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddOpenApi();
 
@@ -63,6 +64,7 @@ if (app.Environment.IsDevelopment())
     app.MapGet("/", () => Results.Redirect("/scalar/v1"));
 }
 
+app.UseExceptionHandler();
 app.UseCors("AllowFrontend");
 app.MapControllers();
 

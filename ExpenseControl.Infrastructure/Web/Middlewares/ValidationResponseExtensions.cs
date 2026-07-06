@@ -1,16 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace ExpenseControl.Infrastructure.Web.Filters;
+namespace ExpenseControl.Infrastructure.Web.Middlewares;
 
-/// <summary>
-/// Configuração customizada para respostas de erro de validação.
-/// Transforma as mensagens cruas do .NET em mensagens amigáveis em português.
-/// </summary>
-public static class ValidationResponseConfig
+public static class ValidationResponseExtensions
 {
     public static IMvcBuilder ConfigureValidationResponse(this IMvcBuilder builder)
     {
-        builder.ConfigureApiBehaviorOptions(options =>
+        return builder.ConfigureApiBehaviorOptions(options =>
         {
             options.InvalidModelStateResponseFactory = context =>
             {
@@ -32,15 +29,18 @@ public static class ValidationResponseConfig
                         }).ToArray()
                     );
 
-                return new BadRequestObjectResult(new
+                var problemDetails = new ProblemDetails
                 {
-                    status = 400,
-                    message = "Erro de validação.",
-                    errors
-                });
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Erro de Validação",
+                    Detail = "Um ou mais erros de validação ocorreram.",
+                    Instance = context.HttpContext.Request.Path
+                };
+
+                problemDetails.Extensions.Add("errors", errors);
+
+                return new BadRequestObjectResult(problemDetails);
             };
         });
-
-        return builder;
     }
 }
