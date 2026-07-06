@@ -29,14 +29,14 @@ O projeto foi desenhado seguindo os princípios da **Arquitetura Hexagonal (Port
 A API possui as seguintes rotas principais:
 
 ### Pessoas (`/api/persons`)
-- `GET /api/persons` - Lista todas as pessoas.
+- `GET /api/persons` - Retorna uma lista paginada de pessoas. Suporta paginação (`?page=1&pageSize=10`) e filtros por nome (`?name=Joao`) ou idade (`?age=30`).
 - `GET /api/persons/{id}` - Retorna os detalhes de uma pessoa e todas as suas transações.
 - `POST /api/persons` - Cria uma nova pessoa. (Validações: Nome min 2 caracteres, Idade entre 1 e 150)
 - `PUT /api/persons/{id}` - Atualiza os dados de uma pessoa (Nome e Idade).
 - `DELETE /api/persons/{id}` - Deleta uma pessoa e, em cascata, todas as suas transações.
 
 ### Transações (`/api/transactions`)
-- `GET /api/transactions` - Lista todas as transações.
+- `GET /api/transactions` - Retorna uma lista paginada de transações. Suporta paginação (`?page=1&pageSize=10`) e filtros por tipo (`?type=Income`) ou ID da pessoa (`?personId=...`).
 - `POST /api/transactions` - Cria uma nova transação. (Validações: Valor positivo, tipo `Income` ou `Expense`, menores de 18 anos não podem cadastrar `Income`).
 - `PUT /api/transactions/{id}` - Atualiza uma transação. (Validações: Não é possível trocar o tipo de uma criança para `Income`).
 - `DELETE /api/transactions/{id}` - Deleta uma transação.
