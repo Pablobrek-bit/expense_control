@@ -49,6 +49,13 @@ public class TransactionRepository : ITransactionRepository
     }
 
     /// <inheritdoc />
+    public async Task UpdateAsync(Transaction transaction)
+    {
+        _context.Transactions.Update(transaction);
+        await _context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
     public async Task DeleteAsync(Transaction transaction)
     {
         _context.Transactions.Remove(transaction);

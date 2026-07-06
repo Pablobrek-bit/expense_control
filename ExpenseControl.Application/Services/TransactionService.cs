@@ -112,6 +112,38 @@ public class TransactionService : ITransactionService
     }
 
     /// <inheritdoc />
+    public async Task<TransactionResponse> UpdateAsync(Guid id, UpdateTransactionRequest request)
+    {
+        var transaction = await _transactionRepository.GetByIdAsync(id)
+            ?? throw new KeyNotFoundException($"Transação com ID '{id}' não encontrada.");
+
+        var person = await _personRepository.GetByIdAsync(transaction.PersonId)
+            ?? throw new KeyNotFoundException($"Pessoa com ID '{transaction.PersonId}' não encontrada.");
+
+        if (person.IsMinor() && request.Type != TransactionType.Expense)
+        {
+            throw new InvalidOperationException(
+                "Pessoas menores de 18 anos só podem ter transações do tipo Despesa.");
+        }
+
+        transaction.Description = request.Description;
+        transaction.Value = request.Value;
+        transaction.Type = request.Type;
+
+        await _transactionRepository.UpdateAsync(transaction);
+
+        return new TransactionResponse
+        {
+            Id = transaction.Id,
+            Description = transaction.Description,
+            Value = transaction.Value,
+            Type = transaction.Type,
+            PersonId = transaction.PersonId,
+            PersonName = person.Name
+        };
+    }
+
+    /// <inheritdoc />
     public async Task DeleteAsync(Guid id)
     {
         var transaction = await _transactionRepository.GetByIdAsync(id)

@@ -86,7 +86,7 @@ Content-Type: application/json
   "description": "Mesada",
   "value": 100.00,
   "type": "Income",
-  "personId": "{{createMinorPerson.response.body.$.id}}"
+  "personId": "55a6b9b9-bc02-4c96-8ce6-47aba31787a8"
 }
 
 ###
@@ -100,7 +100,7 @@ Content-Type: application/json
   "description": "Lanche da escola",
   "value": 15.00,
   "type": "Expense",
-  "personId": "{{createMinorPerson.response.body.$.id}}"
+  "personId": "55a6b9b9-bc02-4c96-8ce6-47aba31787a8"
 }
 
 ###
@@ -117,11 +117,24 @@ Accept: application/json
 
 ###
 
-### 10. Deletar uma Transação Específica
+### 10. Atualizar uma Transação Específica
+# Substitua o ID abaixo pelo ID da transação que deseja atualizar
+PUT {{HostAddress}}/api/transactions/eb376f43-b1e0-499e-9037-976b03a9edf3
+Content-Type: application/json
+
+{
+  "description": "Conta de Luz Atualizada",
+  "value": 200.00,
+  "type": "Expense"
+}
+
+###
+
+### 11. Deletar uma Transação Específica
 # Substitua o ID abaixo pelo ID da transação que deseja deletar
 DELETE {{HostAddress}}/api/transactions/d4652ebd-224c-4db3-baec-34f700b7c112
 
 ###
 
-### 11. Deletar Pessoa Adulta (e em cascata suas transações)
+### 12. Deletar Pessoa Adulta (e em cascata suas transações)
 DELETE {{HostAddress}}/api/persons/{{createAdultPerson.response.body.$.id}}

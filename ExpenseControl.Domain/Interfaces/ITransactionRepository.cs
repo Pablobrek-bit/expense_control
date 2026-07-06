@@ -29,6 +29,11 @@ public interface ITransactionRepository
     Task AddAsync(Transaction transaction);
 
     /// <summary>
+    /// Atualiza uma transação existente.
+    /// </summary>
+    Task UpdateAsync(Transaction transaction);
+
+    /// <summary>
     /// Remove uma transação pelo seu identificador.
     /// </summary>
     Task DeleteAsync(Transaction transaction);

@@ -25,6 +25,12 @@ public interface ITransactionService
     Task<SummaryResponse> GetSummaryAsync();
 
     /// <summary>
+    /// Atualiza uma transação existente.
+    /// Valida regra de menor de idade ao trocar o tipo.
+    /// </summary>
+    Task<TransactionResponse> UpdateAsync(Guid id, UpdateTransactionRequest request);
+
+    /// <summary>
     /// Deleta uma transação pelo seu ID.
     /// </summary>
     Task DeleteAsync(Guid id);

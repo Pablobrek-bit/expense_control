@@ -41,6 +41,16 @@ public class TransactionController : ControllerBase
     }
 
     /// <summary>
+    /// Atualiza uma transação existente.
+    /// </summary>
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<TransactionResponse>> Update(Guid id, [FromBody] UpdateTransactionRequest request)
+    {
+        var updatedTransaction = await _transactionService.UpdateAsync(id, request);
+        return Ok(updatedTransaction);
+    }
+
+    /// <summary>
     /// Deleta uma transação pelo seu ID.
     /// </summary>
     [HttpDelete("{id:guid}")]
