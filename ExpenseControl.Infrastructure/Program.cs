@@ -5,6 +5,9 @@ using ExpenseControl.Domain.Interfaces;
 using ExpenseControl.Infrastructure.Persistence;
 using ExpenseControl.Infrastructure.Persistence.Repositories;
 using ExpenseControl.Infrastructure.Web.Middlewares;
+using ExpenseControl.Application.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -31,7 +34,11 @@ builder.Services.AddControllers()
     })
     .ConfigureValidationResponse();
 
-// Tratamento de exceções e ProblemDetails
+// configuração do fluentvalidation
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<CreatePersonRequestValidator>();
+
+// tratamento de exceções e problemdetails
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
