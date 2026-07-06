@@ -1,4 +1,6 @@
 using ExpenseControl.Application.DTOs;
+using ExpenseControl.Application.DTOs.Common;
+using ExpenseControl.Application.DTOs.Person;
 
 namespace ExpenseControl.Application.Interfaces;
 
@@ -9,9 +11,9 @@ namespace ExpenseControl.Application.Interfaces;
 public interface IPersonService
 {
     /// <summary>
-    /// Retorna todas as pessoas cadastradas.
+    /// Retorna uma lista paginada de pessoas, com opção de filtros.
     /// </summary>
-    Task<IEnumerable<PersonResponse>> GetAllAsync();
+    Task<PagedResult<PersonResponse>> GetAllAsync(PersonFilter filter);
 
     /// <summary>
     /// Retorna os detalhes de uma pessoa pelo seu ID, incluindo suas transações.

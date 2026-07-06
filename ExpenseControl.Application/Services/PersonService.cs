@@ -1,4 +1,6 @@
 using ExpenseControl.Application.DTOs;
+using ExpenseControl.Application.DTOs.Common;
+using ExpenseControl.Application.DTOs.Person;
 using ExpenseControl.Application.Interfaces;
 using ExpenseControl.Domain.Entities;
 using ExpenseControl.Domain.Interfaces;
@@ -23,16 +25,18 @@ public class PersonService : IPersonService
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<PersonResponse>> GetAllAsync()
+    public async Task<PagedResult<PersonResponse>> GetAllAsync(PersonFilter filter)
     {
-        var persons = await _personRepository.GetAllAsync();
+        var (items, totalCount) = await _personRepository.GetAllAsync(filter.Page, filter.PageSize, filter.Name, filter.Age);
 
-        return persons.Select(p => new PersonResponse
+        var responses = items.Select(p => new PersonResponse
         {
             Id = p.Id,
             Name = p.Name,
             Age = p.Age
         });
+
+        return new PagedResult<PersonResponse>(responses, totalCount, filter.Page, filter.PageSize);
     }
 
     /// <inheritdoc />

@@ -18,6 +18,32 @@ public class PersonRepository : IPersonRepository
     }
 
     /// <inheritdoc />
+    public async Task<(IEnumerable<Person> Items, int TotalCount)> GetAllAsync(int page, int pageSize, string? name = null, int? age = null)
+    {
+        var query = _context.Persons.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            query = query.Where(p => p.Name.Contains(name));
+        }
+
+        if (age.HasValue)
+        {
+            query = query.Where(p => p.Age == age.Value);
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderBy(p => p.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
+
+    /// <inheritdoc />
     public async Task<IEnumerable<Person>> GetAllAsync()
     {
         return await _context.Persons

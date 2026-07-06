@@ -1,4 +1,6 @@
 using ExpenseControl.Application.DTOs;
+using ExpenseControl.Application.DTOs.Person;
+using ExpenseControl.Application.DTOs.Common;
 using ExpenseControl.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,12 +22,12 @@ public class PersonController : ControllerBase
     }
 
     /// <summary>
-    /// Lista todas as pessoas cadastradas.
+    /// Retorna uma lista paginada de pessoas, com suporte a filtros.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PersonResponse>>> GetAll()
+    public async Task<ActionResult<PagedResult<PersonResponse>>> GetAll([FromQuery] PersonFilter filter)
     {
-        var persons = await _personService.GetAllAsync();
+        var persons = await _personService.GetAllAsync(filter);
         return Ok(persons);
     }
 

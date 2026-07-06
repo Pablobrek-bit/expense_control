@@ -9,7 +9,13 @@ namespace ExpenseControl.Domain.Interfaces;
 public interface IPersonRepository
 {
     /// <summary>
-    /// Retorna todas as pessoas cadastradas.
+    /// Retorna uma página de pessoas cadastradas, com suporte a filtros.
+    /// Retorna uma tupla contendo a lista de itens e o total de registros que satisfazem o filtro.
+    /// </summary>
+    Task<(IEnumerable<Person> Items, int TotalCount)> GetAllAsync(int page, int pageSize, string? name = null, int? age = null);
+
+    /// <summary>
+    /// Retorna todas as pessoas cadastradas (sem paginação).
     /// </summary>
     Task<IEnumerable<Person>> GetAllAsync();
 
