@@ -112,6 +112,26 @@ docker compose down
 
 ---
 
+## Testes Unitários
+
+O projeto possui uma robusta suíte de testes unitários na camada de Aplicação (`ExpenseControl.Tests`), garantindo a estabilidade e prevenindo regressões de regras de negócio.
+
+### Tecnologias de Teste Utilizadas:
+- **xUnit:** Framework base para estruturação e execução.
+- **Moq:** Isolamento e simulação da camada de repositórios (não necessita de banco real).
+- **FluentAssertions:** Asserções legíveis e expressivas.
+
+### Cobertura:
+- **PersonService:** Cenários completos de paginação, resgate, criação, atualização e deleção em cascata.
+- **TransactionService:** Validação rigorosa de regras de negócio complexas (ex: restrição de menores de idade registrando receitas) e verificação matemática na consolidação de saldos.
+
+Para rodar os testes localmente, basta executar na raiz do projeto:
+```bash
+dotnet test
+```
+
+---
+
 ## Tratamento de Erros
 
 A API possui um **Filtro Global de Exceções** (`GlobalExceptionFilter`) que intercepta erros e garante que o cliente sempre receba uma resposta padronizada no formato JSON:
