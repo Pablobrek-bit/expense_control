@@ -9,6 +9,8 @@ export default function Transactions() {
   const [persons, setPersons] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   // Estados do Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,26 +40,35 @@ export default function Transactions() {
     setIsModalOpen(true);
   };
 
-  const loadData = async () => {
+  const loadPersons = async () => {
     try {
-      setLoading(true);
-      const [transRes, personsRes] = await Promise.all([
-        transactionService.getAll(1, 50),
-        personService.getAll(1, 100)
-      ]);
-      setData(transRes);
+      const personsRes = await personService.getAll(1, 100);
       setPersons(personsRes.items);
     } catch (err) {
+      console.error('Falha ao carregar pessoas para o select:', err);
+    }
+  };
+
+  const loadTransactions = async (currentPage: number) => {
+    try {
+      setLoading(true);
+      const transRes = await transactionService.getAll(currentPage, pageSize);
+      setData(transRes);
+    } catch (err) {
       console.error(err);
-      setError('Falha ao carregar os dados.');
+      setError('Falha ao carregar transações.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadData();
+    loadPersons();
   }, []);
+
+  useEffect(() => {
+    loadTransactions(page);
+  }, [page]);
 
   useEffect(() => {
     setUxWarning('');
@@ -73,7 +84,7 @@ export default function Transactions() {
     if (!window.confirm('Tem certeza que deseja excluir esta transação?')) return;
     try {
       await transactionService.delete(id);
-      loadData();
+      loadTransactions(page);
     } catch (err) {
       console.error(err);
       alert('Erro ao excluir transação.');
@@ -105,7 +116,7 @@ export default function Transactions() {
       setNewType('Expense');
       setNewPersonId('');
       
-      loadData();
+      loadTransactions(page);
     } catch (err: any) {
       console.error(err);
       const errorMessage = err.response?.data?.detail || err.response?.data?.title || (editingId ? 'Erro ao atualizar transação.' : 'Erro ao criar transação.');
@@ -204,6 +215,31 @@ export default function Transactions() {
             </tbody>
           </table>
         </div>
+
+        {/* Controles de Paginação */}
+        {data && data.totalCount > pageSize && (
+          <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+            <span className="text-sm text-gray-500">
+              Mostrando {((data.page - 1) * data.pageSize) + 1} a {Math.min(data.page * data.pageSize, data.totalCount)} de {data.totalCount} registros
+            </span>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={data.page === 1}
+                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-200 disabled:opacity-50 text-sm font-medium transition-colors"
+              >
+                Anterior
+              </button>
+              <button
+                onClick={() => setPage(p => p + 1)}
+                disabled={data.page * data.pageSize >= data.totalCount}
+                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-200 disabled:opacity-50 text-sm font-medium transition-colors"
+              >
+                Próxima
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {isModalOpen && (

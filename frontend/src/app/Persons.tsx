@@ -7,6 +7,8 @@ export default function Persons() {
   const [data, setData] = useState<PaginatedResponse<Person> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -28,10 +30,10 @@ export default function Persons() {
     setIsModalOpen(true);
   };
 
-  const fetchPersons = async () => {
+  const fetchPersons = async (currentPage: number) => {
     try {
       setLoading(true);
-      const res = await personService.getAll(1, 50);
+      const res = await personService.getAll(currentPage, pageSize);
       setData(res);
     } catch (err) {
       console.error(err);
@@ -42,14 +44,14 @@ export default function Persons() {
   };
 
   useEffect(() => {
-    fetchPersons();
-  }, []);
+    fetchPersons(page);
+  }, [page]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Tem certeza que deseja excluir esta pessoa?')) return;
     try {
       await personService.delete(id);
-      fetchPersons();
+      fetchPersons(page);
     } catch (err) {
       console.error(err);
       alert('Erro ao excluir pessoa. Verifique se ela possui transações vinculadas.');
@@ -70,7 +72,7 @@ export default function Persons() {
       setIsModalOpen(false);
       setNewName('');
       setNewAge('');
-      fetchPersons();
+      fetchPersons(page);
     } catch (err) {
       console.error(err);
       alert(editingId ? 'Erro ao atualizar pessoa.' : 'Erro ao criar pessoa.');
@@ -148,6 +150,31 @@ export default function Persons() {
             </tbody>
           </table>
         </div>
+        
+        {/* Controles de Paginação */}
+        {data && data.totalCount > pageSize && (
+          <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+            <span className="text-sm text-gray-500">
+              Mostrando {((data.page - 1) * data.pageSize) + 1} a {Math.min(data.page * data.pageSize, data.totalCount)} de {data.totalCount} registros
+            </span>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={data.page === 1}
+                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-200 disabled:opacity-50 text-sm font-medium transition-colors"
+              >
+                Anterior
+              </button>
+              <button
+                onClick={() => setPage(p => p + 1)}
+                disabled={data.page * data.pageSize >= data.totalCount}
+                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-200 disabled:opacity-50 text-sm font-medium transition-colors"
+              >
+                Próxima
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {isModalOpen && (
