@@ -1,3 +1,6 @@
 <Solution>
-  <Project Path="ExpenseControl.Api/ExpenseControl.Api.csproj" />
+  <Project Path="ExpenseControl.Application/ExpenseControl.Application.csproj" />
+  <Project Path="ExpenseControl.Domain/ExpenseControl.Domain.csproj" />
+  <Project Path="ExpenseControl.Infrastructure/ExpenseControl.Infrastructure.csproj" />
+  <Project Path="ExpenseControl.Tests/ExpenseControl.Tests.csproj" />
 </Solution>

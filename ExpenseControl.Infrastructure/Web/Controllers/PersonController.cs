@@ -1,0 +1,73 @@
+using ExpenseControl.Application.DTOs;
+using ExpenseControl.Application.DTOs.Person;
+using ExpenseControl.Application.DTOs.Common;
+using ExpenseControl.Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+
+namespace ExpenseControl.Infrastructure.Web.Controllers;
+
+/// <summary>
+/// Controller para gerenciamento de Pessoas.
+/// Driving Adapter — recebe requisições HTTP e delega para o caso de uso.
+/// </summary>
+[ApiController]
+[Route("api/persons")]
+public class PersonController : ControllerBase
+{
+    private readonly IPersonService _personService;
+
+    public PersonController(IPersonService personService)
+    {
+        _personService = personService;
+    }
+
+    /// <summary>
+    /// Retorna uma lista paginada de pessoas, com suporte a filtros.
+    /// </summary>
+    [HttpGet]
+    public async Task<ActionResult<PagedResult<PersonResponse>>> GetAll([FromQuery] PersonFilter filter)
+    {
+        var persons = await _personService.GetAllAsync(filter);
+        return Ok(persons);
+    }
+
+    /// <summary>
+    /// Retorna os detalhes de uma pessoa pelo seu ID, incluindo suas transações.
+    /// </summary>
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<PersonDetailsResponse>> GetById(Guid id)
+    {
+        var personDetails = await _personService.GetDetailsAsync(id);
+        return Ok(personDetails);
+    }
+
+    /// <summary>
+    /// Cria uma nova pessoa.
+    /// </summary>
+    [HttpPost]
+    public async Task<ActionResult<PersonResponse>> Create([FromBody] CreatePersonRequest request)
+    {
+        var person = await _personService.CreateAsync(request);
+        return CreatedAtAction(nameof(GetById), new { id = person.Id }, person);
+    }
+
+    /// <summary>
+    /// Atualiza os dados de uma pessoa.
+    /// </summary>
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<PersonResponse>> Update(Guid id, [FromBody] UpdatePersonRequest request)
+    {
+        var updatedPerson = await _personService.UpdateAsync(id, request);
+        return Ok(updatedPerson);
+    }
+
+    /// <summary>
+    /// Deleta uma pessoa e todas as suas transações associadas.
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _personService.DeleteAsync(id);
+        return NoContent();
+    }
+}
