@@ -1,9 +1,10 @@
-# Expense Control API 
+# Expense Control (Fullstack)
 
-Sistema de controle de gastos (receitas e despesas) construído com **.NET 10** e **Arquitetura Hexagonal**. O objetivo da API é gerenciar pessoas e suas transações financeiras, com regras de negócio específicas (ex: menores de idade não podem registrar despesas) e fornecimento de resumos consolidados.
+Sistema completo de controle de gastos (receitas e despesas) construído com **.NET 10 (Arquitetura Hexagonal)** no Backend e **React + Vite + Tailwind v4** no Frontend. O objetivo do sistema é gerenciar pessoas e suas transações financeiras, garantindo regras de negócio (como a proibição de menores de idade cadastrarem receitas) de ponta a ponta.
 
 ## Tecnologias Utilizadas
 
+### Backend
 - **.NET SDK:** `10.0-preview`
 - **Linguagem:** C# 14
 - **Banco de Dados:** PostgreSQL `15-alpine`
@@ -11,6 +12,13 @@ Sistema de controle de gastos (receitas e despesas) construído com **.NET 10** 
 - **Provider PostgreSQL:** Npgsql.EntityFrameworkCore.PostgreSQL `10.0.2`
 - **Documentação de API:** Scalar.AspNetCore `2.16.10`
 - **Containerização:** Docker e Docker Compose (Multi-stage build)
+
+### Frontend
+- **Framework:** React 19 + Vite
+- **Estilização:** Tailwind CSS v4
+- **Ícones:** Lucide React
+- **Comunicação HTTP:** Axios
+- **Linguagem:** TypeScript
 
 ---
 
@@ -86,6 +94,23 @@ Além do Scalar, você pode utilizar o arquivo **`ExpenseControl.http`** incluí
    ```
 4. A API estará disponível em: `http://localhost:5023`
 
+### Rodando o Frontend (Localmente)
+
+Após subir o Backend, abra uma nova aba do terminal:
+1. Entre na pasta do frontend:
+   ```bash
+   cd frontend
+   ```
+2. Instale as dependências do Node:
+   ```bash
+   npm install
+   ```
+3. Rode o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+4. A interface web estará disponível em: `http://localhost:5173`
+
 ### Opção 2: Rodando tudo com Docker
 
 O projeto possui um `Dockerfile` otimizado utilizando **Multi-stage Build**, garantindo uma imagem final extremamente leve, sem o SDK do .NET, contendo apenas os binários necessários.
@@ -98,7 +123,9 @@ O projeto possui um `Dockerfile` otimizado utilizando **Multi-stage Build**, gar
    - Subir o container do PostgreSQL (`expense_control_db`).
    - Aguardar o banco de dados estar saudável (via *Healthcheck*).
    - Fazer o build e iniciar o container da API (`expense_control_app`).
+   - Fazer o build otimizado (Multi-stage com Nginx) e iniciar o container do Frontend (`expense_control_frontend`).
 3. A API estará disponível em: `http://localhost:8080`
+4. A Interface Web estará disponível em: `http://localhost:5173`
 
 Para ver os logs da aplicação no Docker:
 ```bash
