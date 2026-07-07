@@ -85,6 +85,15 @@ public class PersonService : IPersonService
         var person = await _personRepository.GetByIdAsync(id)
             ?? throw new KeyNotFoundException($"Pessoa com ID '{id}' não encontrada.");
 
+        if (request.Age < 18 && person.Age >= 18)
+        {
+            var transactions = await _transactionRepository.GetByPersonIdAsync(id);
+            if (transactions.Any(t => t.Type == Domain.Enums.TransactionType.Income))
+            {
+                throw new ArgumentException("Não é permitido alterar a idade para menor de 18 anos, pois esta pessoa já possui transações de Receita (Income). Remova as receitas primeiro.");
+            }
+        }
+
         person.Name = request.Name;
         person.Age = request.Age;
 

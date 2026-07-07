@@ -144,6 +144,67 @@ public class PersonServiceTests
     }
 
     [Fact]
+    public async Task UpdateAsync_ShouldThrowArgumentException_WhenChangingAdultToMinorWithIncome()
+    {
+        // Arrange
+        var personId = Guid.NewGuid();
+        var existingPerson = new Person { Id = personId, Name = "Carlos", Age = 30 };
+        var updateRequest = new UpdatePersonRequest { Name = "Carlos", Age = 17 };
+        var transactions = new List<Transaction>
+        {
+            new Transaction { Id = Guid.NewGuid(), Type = TransactionType.Income, Value = 1000 }
+        };
+
+        _personRepositoryMock
+            .Setup(r => r.GetByIdAsync(personId))
+            .ReturnsAsync(existingPerson);
+
+        _transactionRepositoryMock
+            .Setup(t => t.GetByPersonIdAsync(personId))
+            .ReturnsAsync(transactions);
+
+        // Act
+        Func<Task> act = async () => await _personService.UpdateAsync(personId, updateRequest);
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("Não é permitido alterar a idade para menor de 18 anos, pois esta pessoa já possui transações de Receita (Income). Remova as receitas primeiro.");
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ShouldUpdate_WhenChangingAdultToMinorWithoutIncome()
+    {
+        // Arrange
+        var personId = Guid.NewGuid();
+        var existingPerson = new Person { Id = personId, Name = "Carlos", Age = 30 };
+        var updateRequest = new UpdatePersonRequest { Name = "Carlos", Age = 17 };
+        var transactions = new List<Transaction>
+        {
+            new Transaction { Id = Guid.NewGuid(), Type = TransactionType.Expense, Value = 50 }
+        };
+
+        _personRepositoryMock
+            .Setup(r => r.GetByIdAsync(personId))
+            .ReturnsAsync(existingPerson);
+
+        _transactionRepositoryMock
+            .Setup(t => t.GetByPersonIdAsync(personId))
+            .ReturnsAsync(transactions);
+
+        _personRepositoryMock
+            .Setup(r => r.UpdateAsync(It.IsAny<Person>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _personService.UpdateAsync(personId, updateRequest);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Age.Should().Be(17);
+        _personRepositoryMock.Verify(r => r.UpdateAsync(It.Is<Person>(p => p.Age == 17)), Times.Once);
+    }
+
+    [Fact]
     public async Task UpdateAsync_ShouldThrowKeyNotFoundException_WhenPersonDoesNotExist()
     {
         // Arrange

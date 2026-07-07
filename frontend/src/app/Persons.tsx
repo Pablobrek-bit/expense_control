@@ -14,12 +14,15 @@ export default function Persons() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newName, setNewName] = useState('');
   const [newAge, setNewAge] = useState<number | ''>('');
+  const [originalAge, setOriginalAge] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uxWarning, setUxWarning] = useState('');
 
   const openModalForCreate = () => {
     setEditingId(null);
     setNewName('');
     setNewAge('');
+    setOriginalAge(null);
     setIsModalOpen(true);
   };
 
@@ -27,8 +30,16 @@ export default function Persons() {
     setEditingId(person.id);
     setNewName(person.name);
     setNewAge(person.age);
+    setOriginalAge(person.age);
     setIsModalOpen(true);
   };
+
+  useEffect(() => {
+    setUxWarning('');
+    if (editingId && originalAge !== null && originalAge >= 18 && newAge !== '' && newAge < 18) {
+      setUxWarning('Atenção: Se esta pessoa possuir transações de Receita (Income) cadastradas, o servidor recusará a alteração para menor de idade.');
+    }
+  }, [editingId, originalAge, newAge]);
 
   const fetchPersons = async (currentPage: number) => {
     try {
@@ -73,9 +84,10 @@ export default function Persons() {
       setNewName('');
       setNewAge('');
       fetchPersons(page);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert(editingId ? 'Erro ao atualizar pessoa.' : 'Erro ao criar pessoa.');
+      const errorMessage = err.response?.data?.detail || err.response?.data?.title || (editingId ? 'Erro ao atualizar pessoa.' : 'Erro ao criar pessoa.');
+      alert(`Falha: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -211,6 +223,12 @@ export default function Persons() {
                   placeholder="Ex: 30"
                 />
               </div>
+
+              {uxWarning && (
+                <div className="bg-orange-50 text-orange-700 p-3 rounded-lg text-sm font-medium border border-orange-200">
+                  {uxWarning}
+                </div>
+              )}
 
               <div className="pt-4 flex space-x-3">
                 <button
