@@ -1,6 +1,3 @@
-# ==========================================
-# STAGE 1 — RESTORE (camada de cache de dependências)
-# ==========================================
 FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS restore
 
 WORKDIR /src
@@ -9,6 +6,7 @@ COPY ExpenseControl.slnx ./
 COPY ExpenseControl.Domain/ExpenseControl.Domain.csproj ExpenseControl.Domain/
 COPY ExpenseControl.Application/ExpenseControl.Application.csproj ExpenseControl.Application/
 COPY ExpenseControl.Infrastructure/ExpenseControl.Infrastructure.csproj ExpenseControl.Infrastructure/
+COPY ExpenseControl.Tests/ExpenseControl.Tests.csproj ExpenseControl.Tests/
 
 RUN dotnet restore ExpenseControl.slnx
 
