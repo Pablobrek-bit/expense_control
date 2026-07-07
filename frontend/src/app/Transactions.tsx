@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { transactionService } from '../services/transactions';
 import { personService } from '../services/persons';
 import type { Transaction, Person, PaginatedResponse } from '../types';
-import { Loader2, Plus, Trash2, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
+import { Loader2, Plus, Trash2, ArrowDownCircle, ArrowUpCircle, Pencil } from 'lucide-react';
 
 export default function Transactions() {
   const [data, setData] = useState<PaginatedResponse<Transaction> | null>(null);
@@ -12,12 +12,31 @@ export default function Transactions() {
 
   // Estados do Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [newDesc, setNewDesc] = useState('');
   const [newValue, setNewValue] = useState<number | ''>('');
   const [newType, setNewType] = useState<'Income' | 'Expense'>('Expense');
   const [newPersonId, setNewPersonId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uxWarning, setUxWarning] = useState('');
+
+  const openModalForCreate = () => {
+    setEditingId(null);
+    setNewDesc('');
+    setNewValue('');
+    setNewType('Expense');
+    setNewPersonId('');
+    setIsModalOpen(true);
+  };
+
+  const openModalForEdit = (trans: Transaction) => {
+    setEditingId(trans.id);
+    setNewDesc(trans.description);
+    setNewValue(trans.value);
+    setNewType(trans.type);
+    setNewPersonId(trans.personId);
+    setIsModalOpen(true);
+  };
 
   const loadData = async () => {
     try {
@@ -61,18 +80,24 @@ export default function Transactions() {
     }
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newDesc || !newValue || !newType || !newPersonId) return;
 
     setIsSubmitting(true);
     try {
-      await transactionService.create({
+      const payload = {
         description: newDesc,
         value: Number(newValue),
         type: newType,
         personId: newPersonId
-      });
+      };
+      
+      if (editingId) {
+        await transactionService.update(editingId, payload);
+      } else {
+        await transactionService.create(payload);
+      }
       setIsModalOpen(false);
       
       setNewDesc('');
@@ -83,7 +108,7 @@ export default function Transactions() {
       loadData();
     } catch (err: any) {
       console.error(err);
-      const errorMessage = err.response?.data?.detail || err.response?.data?.title || 'Erro ao criar transação.';
+      const errorMessage = err.response?.data?.detail || err.response?.data?.title || (editingId ? 'Erro ao atualizar transação.' : 'Erro ao criar transação.');
       alert(`Falha: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
@@ -99,7 +124,7 @@ export default function Transactions() {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Transações</h2>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={openModalForCreate}
           className="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition-colors"
         >
           <Plus size={20} />
@@ -152,6 +177,13 @@ export default function Transactions() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button
+                      onClick={() => openModalForEdit(trans)}
+                      className="text-blue-500 hover:text-blue-700 p-2 rounded-full hover:bg-blue-50 transition-colors inline-flex mr-2"
+                      title="Editar transação"
+                    >
+                      <Pencil size={18} />
+                    </button>
+                    <button
                       onClick={() => handleDelete(trans.id)}
                       className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors inline-flex"
                       title="Excluir transação"
@@ -178,11 +210,11 @@ export default function Transactions() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
             <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0">
-              <h3 className="text-lg font-bold text-gray-800">Nova Transação</h3>
+              <h3 className="text-lg font-bold text-gray-800">{editingId ? 'Editar Transação' : 'Nova Transação'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
             </div>
             
-            <form onSubmit={handleCreate} className="p-6 space-y-4 overflow-y-auto">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
               
               {persons.length === 0 && (
                 <div className="bg-orange-50 text-orange-700 p-3 rounded-lg text-sm mb-4">

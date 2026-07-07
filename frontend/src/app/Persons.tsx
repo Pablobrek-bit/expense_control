@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { personService } from '../services/persons';
 import type { Person, PaginatedResponse } from '../types';
-import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { Loader2, Plus, Trash2, Pencil } from 'lucide-react';
 
 export default function Persons() {
   const [data, setData] = useState<PaginatedResponse<Person> | null>(null);
@@ -9,9 +9,24 @@ export default function Persons() {
   const [error, setError] = useState('');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [newName, setNewName] = useState('');
   const [newAge, setNewAge] = useState<number | ''>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const openModalForCreate = () => {
+    setEditingId(null);
+    setNewName('');
+    setNewAge('');
+    setIsModalOpen(true);
+  };
+
+  const openModalForEdit = (person: Person) => {
+    setEditingId(person.id);
+    setNewName(person.name);
+    setNewAge(person.age);
+    setIsModalOpen(true);
+  };
 
   const fetchPersons = async () => {
     try {
@@ -41,20 +56,24 @@ export default function Persons() {
     }
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName || !newAge) return;
 
     setIsSubmitting(true);
     try {
-      await personService.create({ name: newName, age: Number(newAge) });
+      if (editingId) {
+        await personService.update(editingId, { name: newName, age: Number(newAge) });
+      } else {
+        await personService.create({ name: newName, age: Number(newAge) });
+      }
       setIsModalOpen(false);
       setNewName('');
       setNewAge('');
       fetchPersons();
     } catch (err) {
       console.error(err);
-      alert('Erro ao criar pessoa.');
+      alert(editingId ? 'Erro ao atualizar pessoa.' : 'Erro ao criar pessoa.');
     } finally {
       setIsSubmitting(false);
     }
@@ -65,7 +84,7 @@ export default function Persons() {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Pessoas</h2>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={openModalForCreate}
           className="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition-colors"
         >
           <Plus size={20} />
@@ -102,6 +121,13 @@ export default function Persons() {
                   <td className="px-6 py-4 text-gray-600">{person.age} anos</td>
                   <td className="px-6 py-4 text-right">
                     <button
+                      onClick={() => openModalForEdit(person)}
+                      className="text-blue-500 hover:text-blue-700 p-2 rounded-full hover:bg-blue-50 transition-colors inline-flex mr-2"
+                      title="Editar pessoa"
+                    >
+                      <Pencil size={18} />
+                    </button>
+                    <button
                       onClick={() => handleDelete(person.id)}
                       className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors inline-flex"
                       title="Excluir pessoa"
@@ -128,11 +154,11 @@ export default function Persons() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-gray-800">Nova Pessoa</h3>
+              <h3 className="text-lg font-bold text-gray-800">{editingId ? 'Editar Pessoa' : 'Nova Pessoa'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
             </div>
             
-            <form onSubmit={handleCreate} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
                 <input
