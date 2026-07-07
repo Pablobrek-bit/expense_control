@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { summaryService } from '../services/summary';
 import type { SummaryResponse } from '../types';
 import { ArrowDownCircle, ArrowUpCircle, Wallet, Loader2 } from 'lucide-react';
