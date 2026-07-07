@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { personService } from '../services/persons';
 import type { Person, PaginatedResponse } from '../types';
-import { Loader2, Plus, Trash2, Pencil } from 'lucide-react';
+import { Loader2, Plus, Trash2, Pencil, Eye } from 'lucide-react';
 
 export default function Persons() {
   const [data, setData] = useState<PaginatedResponse<Person> | null>(null);
@@ -17,6 +17,10 @@ export default function Persons() {
   const [originalAge, setOriginalAge] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uxWarning, setUxWarning] = useState('');
+
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedPersonDetails, setSelectedPersonDetails] = useState<Person | null>(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
 
   const openModalForCreate = () => {
     setEditingId(null);
@@ -57,6 +61,22 @@ export default function Persons() {
   useEffect(() => {
     fetchPersons(page);
   }, [page]);
+
+  const handleViewDetails = async (id: string) => {
+    setIsDetailsModalOpen(true);
+    setLoadingDetails(true);
+    setSelectedPersonDetails(null);
+    try {
+      const details = await personService.getById(id);
+      setSelectedPersonDetails(details);
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao carregar detalhes da pessoa.');
+      setIsDetailsModalOpen(false);
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Tem certeza que deseja excluir esta pessoa?')) return;
@@ -133,7 +153,14 @@ export default function Persons() {
                 <tr key={person.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-900">{person.name}</td>
                   <td className="px-6 py-4 text-gray-600">{person.age} anos</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right whitespace-nowrap">
+                    <button
+                      onClick={() => handleViewDetails(person.id)}
+                      className="text-emerald-500 hover:text-emerald-700 p-2 rounded-full hover:bg-emerald-50 transition-colors inline-flex mr-2"
+                      title="Ver detalhes"
+                    >
+                      <Eye size={18} />
+                    </button>
                     <button
                       onClick={() => openModalForEdit(person)}
                       className="text-blue-500 hover:text-blue-700 p-2 rounded-full hover:bg-blue-50 transition-colors inline-flex mr-2"
@@ -247,6 +274,88 @@ export default function Persons() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Detalhes da Pessoa */}
+      {isDetailsModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <Eye size={24} className="text-emerald-600" /> Detalhes da Pessoa
+              </h3>
+              <button onClick={() => setIsDetailsModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto flex-1">
+              {loadingDetails ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Loader2 className="animate-spin text-emerald-500 mb-4" size={40} />
+                  <p className="text-gray-500">Carregando histórico...</p>
+                </div>
+              ) : selectedPersonDetails ? (
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                    <div>
+                      <p className="text-sm text-emerald-800 font-medium uppercase tracking-wide">Nome</p>
+                      <p className="text-2xl font-bold text-gray-900">{selectedPersonDetails.name}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-emerald-800 font-medium uppercase tracking-wide">Idade</p>
+                      <p className="text-2xl font-bold text-gray-900">{selectedPersonDetails.age} anos</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-bold text-gray-800 mb-3 border-b pb-2">Histórico de Transações</h4>
+                    
+                    {!selectedPersonDetails.transactions || selectedPersonDetails.transactions.length === 0 ? (
+                      <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-100">
+                        <p className="text-gray-500">Nenhuma transação encontrada para esta pessoa.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {selectedPersonDetails.transactions.map((tx) => (
+                          <div key={tx.id} className="flex items-center justify-between p-4 bg-white border border-gray-100 shadow-sm rounded-lg hover:border-emerald-200 transition-colors">
+                            <div className="flex items-center gap-4">
+                              <div className={`p-2 rounded-full ${tx.type === 'Income' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                                {tx.type === 'Income' ? (
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 8v8"/></svg>
+                                ) : (
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12 4 4 4-4"/><path d="M12 8v8"/></svg>
+                                )}
+                              </div>
+                              <div>
+                                <p className="font-semibold text-gray-900">{tx.description}</p>
+                                <p className="text-xs text-gray-500 font-medium uppercase">{tx.type === 'Income' ? 'Receita' : 'Despesa'}</p>
+                              </div>
+                            </div>
+                            <span className={`font-bold text-lg ${tx.type === 'Income' ? 'text-emerald-600' : 'text-red-600'}`}>
+                              {tx.type === 'Income' ? '+' : '-'} R$ {tx.value.toFixed(2)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-red-500">
+                  <p>Não foi possível carregar os dados.</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="px-6 py-4 border-t border-gray-100 bg-gray-50">
+              <button
+                onClick={() => setIsDetailsModalOpen(false)}
+                className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors shadow-sm"
+              >
+                Fechar
+              </button>
+            </div>
           </div>
         </div>
       )}
