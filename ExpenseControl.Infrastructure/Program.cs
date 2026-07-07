@@ -57,11 +57,12 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// essa parte vai aplicar as migrations
+// essa parte vai aplicar as migrations e rodar o seed
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
+    DbSeeder.Seed(db);
 }
 
 if (app.Environment.IsDevelopment())
