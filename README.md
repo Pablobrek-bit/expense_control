@@ -78,6 +78,23 @@ Além do Scalar, você pode utilizar o arquivo **`ExpenseControl.http`** incluí
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [Docker e Docker Compose](https://www.docker.com/products/docker-desktop/)
 
+### Configuração Inicial (Variáveis de Ambiente)
+Antes de rodar o projeto, você precisa configurar as variáveis de ambiente.
+
+1. **Na raiz do projeto (Backend e Banco de Dados):**
+   Copie o arquivo `.env.example` para `.env` e preencha os dados do banco (ou mantenha os padrões para testes locais):
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Na pasta `frontend` (se for rodar localmente):**
+   Copie o arquivo `.env.example` para `.env` e aponte para a URL da API:
+   ```bash
+   cd frontend
+   cp .env.example .env
+   # Conteúdo padrão: VITE_API_URL=http://localhost:5023/api
+   ```
+
 ### Opção 1: Rodando Localmente
 
 1. Suba apenas o banco de dados usando o arquivo compose:
